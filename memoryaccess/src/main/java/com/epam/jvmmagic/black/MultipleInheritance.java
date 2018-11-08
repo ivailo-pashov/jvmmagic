@@ -4,6 +4,9 @@ import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
 
+/*
+ *  Demo is assuming it's executed on 32-bit Java 8
+ */
 public class MultipleInheritance {
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
@@ -13,40 +16,40 @@ public class MultipleInheritance {
         A a = new A();
 
         Unsafe unsafe = getUnsafe();
-        print(a, "variable i", normalize(unsafe.getInt(a, 8L)));
-        print(a,"variable j", normalize(unsafe.getInt(a, 12L)));
+        print(a, "variable a1", normalize(unsafe.getInt(a, 8L)));
+        print(a,"variable a2", normalize(unsafe.getInt(a, 12L)));
 
         printClassAddresses(a);
 
         B b = new B();
 
+        print(b, "variable b1", normalize(unsafe.getInt(b, 8L)));
+
         printClassAddresses(b);
 
-        C c = new C();
-
-        print(c, "variable k", normalize(unsafe.getInt(c, 8L)));
-
-        printClassAddresses(c);
-
         print("Starting multiple inheritance transformation");
-        print("Shifting " + c.getClass().getSimpleName() + " class pointer and changing super check offset");
-        final long cClassAddress = getClassAddress(c);
-        unsafe.putAddress(cClassAddress + 32L, cClassAddress);
-        unsafe.putAddress(cClassAddress + 8L, 32L);
-        printClassAddresses(c);
+        print("Shifting " + b.getClass().getSimpleName() + " class pointer and changing super check offset");
+        final long bClassAddress = getClassAddress(b);
+        unsafe.putAddress(bClassAddress + 32L, bClassAddress);
+        unsafe.putAddress(bClassAddress + 8L, 32L);
+        printClassAddresses(b);
 
         print("Adding " + a.getClass().getSimpleName() + " class pointer as supertype");
         final long aClassAddress = getClassAddress(a);
-        unsafe.putAddress(cClassAddress + 28L, aClassAddress);
-        printClassAddresses(c);
+        unsafe.putAddress(bClassAddress + 28L, aClassAddress);
+        printClassAddresses(b);
 
-//        A ac = (A)(Object)c;
-//        ac.i = 12;
-//        print(c.k + "");
-//        print(normalize(unsafe.getInt(c, 12L)) + "");
-//        B bc = (B)(Object)c;
+        A ba = (A)(Object)b;
 
-//        print("c instanceof A: " + Boolean.toString((A)(Object)c instanceof A));
+        print("b instanceof A: " + Boolean.toString(ba instanceof A));
+        print("b instanceof B: " + Boolean.toString(b instanceof B));
+        print("");
+
+        print("Setting value of ba.a1 to 10");
+        ba.a1 = 10;
+        print("ba.a1=" + ba.a1);
+        print("ba.a2=" + ba.a2);
+        print("b.b1=" + b.b1);
     }
 
     private static long normalize(int value) {
@@ -64,12 +67,11 @@ public class MultipleInheritance {
     private static <T> void printClassAddresses(T instance) throws NoSuchFieldException, IllegalAccessException {
         Unsafe unsafe = getUnsafe();
         final long classAddress = getClassAddress(instance);
-        print(instance,"instance class address", classAddress);
         print(instance,"super check offset", unsafe.getAddress(classAddress + 8L));
+        print(instance,"instance class address", classAddress);
         print(instance,"supertype 0 class address", unsafe.getAddress(classAddress + 24L));
         print(instance,"supertype 1 class address", unsafe.getAddress(classAddress + 28L));
         print(instance,"supertype 2 class address", unsafe.getAddress(classAddress + 32L));
-        print(instance,"supertype 3 class address", unsafe.getAddress(classAddress + 36L));
         print("");
     }
 
@@ -86,15 +88,11 @@ public class MultipleInheritance {
     }
 
     private static class A {
-        int i = 7;
-        int j = 8;
+        int a1 = 7;
+        int a2 = 8;
     }
 
     private static class B {
-
-    }
-
-    private static class C {
-        int k = 9;
+        int b1 = 9;
     }
 }
