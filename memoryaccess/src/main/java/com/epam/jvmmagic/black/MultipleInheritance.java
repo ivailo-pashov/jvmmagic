@@ -50,6 +50,12 @@ public class MultipleInheritance {
         print("ba.a1=" + ba.a1);
         print("ba.a2=" + ba.a2);
         print("b.b1=" + b.b1);
+
+        methodWhichTakesA(ba);
+    }
+
+    private static void methodWhichTakesA(A a) {
+        print("Value printed from method which takes a different parameter: " + ((B)(Object)a).b1);
     }
 
     private static long normalize(int value) {
@@ -87,7 +93,7 @@ public class MultipleInheritance {
         System.out.println(message);
     }
 
-    private static class A {
+    private static final class A {
         int a1 = 7;
         int a2 = 8;
     }
