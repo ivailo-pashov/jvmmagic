@@ -34,7 +34,8 @@ public class UnsafeDirectSerializer implements Serializer {
 
     @Override
     public void reset() {
-
+        input.reset();
+        output.reset();
     }
 
     @Override
@@ -64,7 +65,7 @@ public class UnsafeDirectSerializer implements Serializer {
 
     @Override
     public long getLong() {
-       return input.readLong();
+        return input.readLong();
     }
 
     @Override
@@ -90,6 +91,4 @@ public class UnsafeDirectSerializer implements Serializer {
         int arraySize = getInt();
         return input.readDoubles(arraySize);
     }
-
-
 }

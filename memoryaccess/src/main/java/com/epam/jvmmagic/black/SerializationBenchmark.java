@@ -10,16 +10,21 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @State(Scope.Thread)
-@Warmup(time = 2000, timeUnit = TimeUnit.MILLISECONDS)
-@Measurement(time = 1000, timeUnit = TimeUnit.MILLISECONDS)
-@Fork(1)
+@Warmup(time = 3000, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(time = 3000, timeUnit = TimeUnit.MILLISECONDS)
+@Fork(2)
 public class SerializationBenchmark {
 
-    private int size;
+    @Param({"10", "1000", "100000"})
+    private int dataSize;
+
+    private int bufferSize;
     private ObjectToBeSerialized objectToBeSerialized;
     private UnsafeSerializer serializer;
     private ByteBuffer buffer;
@@ -28,31 +33,30 @@ public class SerializationBenchmark {
 
     @Setup
     public void setup() {
-        size = 1024;
+        bufferSize = 16 * dataSize + 64;
         objectToBeSerialized = new ObjectToBeSerialized(
                 1010L, true, 777, 99,
-                new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0},
-                new long[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+                IntStream.range(0, dataSize).mapToDouble(i -> i / 10d).toArray(),
+                LongStream.range(0, dataSize).toArray()
         );
-        serializer = new UnsafeSerializer(size);
-        directSerializer = new UnsafeDirectSerializer(size);
-        buffer = ByteBuffer.allocate(size);
-        directBuffer = ByteBuffer.allocateDirect(size);
+        serializer = new UnsafeSerializer(bufferSize);
+        directSerializer = new UnsafeDirectSerializer(bufferSize);
+        buffer = ByteBuffer.allocate(bufferSize);
+        directBuffer = ByteBuffer.allocateDirect(bufferSize);
     }
 
     @Benchmark
     public byte[] writeSerialization() {
-        JavaSerializer serializer = new JavaSerializer(size);
+        JavaSerializer serializer = new JavaSerializer(bufferSize);
         return serializer.write(objectToBeSerialized);
     }
 
     @Benchmark
     public ObjectToBeSerialized copySerialization() {
-        JavaSerializer serializer = new JavaSerializer(size);
+        JavaSerializer serializer = new JavaSerializer(bufferSize);
         byte[] bytes = serializer.write(objectToBeSerialized);
         return (ObjectToBeSerialized) serializer.read(bytes);
     }
-
 
     @Benchmark
     public byte[] writeByteBuffer() {
