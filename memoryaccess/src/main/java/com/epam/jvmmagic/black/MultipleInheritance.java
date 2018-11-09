@@ -51,6 +51,12 @@ public class MultipleInheritance {
         print("ba.a2=" + ba.a2);
         print("b.b1=" + b.b1);
 
+        print("Setting value of ba.a1 to 11 through memory");
+        unsafe.putInt(ba, 8L, 11);
+        print("ba.a1=" + ba.a1);
+        print("ba.a2=" + ba.a2);
+        print("b.b1=" + b.b1);
+
         methodWhichTakesA(ba);
     }
 
@@ -94,11 +100,11 @@ public class MultipleInheritance {
     }
 
     private static final class A {
-        int a1 = 7;
-        int a2 = 8;
+        private int a1 = 7;
+        private int a2 = 8;
     }
 
     private static class B {
-        int b1 = 9;
+        private int b1 = 9;
     }
 }
