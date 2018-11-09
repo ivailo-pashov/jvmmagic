@@ -1,5 +1,6 @@
 package com.epam.jvmmagic.black;
 
+import com.epam.jvmmagic.black.util.UnsafeProvider;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -15,7 +16,7 @@ public class MultipleInheritance {
 
         A a = new A();
 
-        Unsafe unsafe = getUnsafe();
+        Unsafe unsafe = UnsafeProvider.getUnsafe();
         print(a, "variable a1", normalize(unsafe.getInt(a, 8L)));
         print(a,"variable a2", normalize(unsafe.getInt(a, 12L)));
 
@@ -69,15 +70,8 @@ public class MultipleInheritance {
         return (~0L >>> 32) & value;
     }
 
-    private static Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
-        Field f = Unsafe.class.getDeclaredField("theUnsafe");
-        f.setAccessible(true);
-        Unsafe unsafe = (Unsafe) f.get(null);
-        return unsafe;
-    }
-
     private static <T> void printClassAddresses(T instance) throws NoSuchFieldException, IllegalAccessException {
-        Unsafe unsafe = getUnsafe();
+        Unsafe unsafe = UnsafeProvider.getUnsafe();
         final long classAddress = getClassAddress(instance);
         print(instance,"super check offset", unsafe.getAddress(classAddress + 8L));
         print(instance,"instance class address", classAddress);
@@ -88,7 +82,7 @@ public class MultipleInheritance {
     }
 
     private static <T> long getClassAddress(T instance) throws NoSuchFieldException, IllegalAccessException {
-        return normalize(getUnsafe().getInt(instance, 4L));
+        return normalize(UnsafeProvider.getUnsafe().getInt(instance, 8L));
     }
 
     private static <T> void print(T instance, String description, long value) {

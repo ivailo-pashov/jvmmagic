@@ -1,8 +1,7 @@
 package com.epam.jvmmagic.black;
 
-import sun.misc.Unsafe;
+import com.epam.jvmmagic.black.util.UnsafeProvider;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 public class UnsafeNoConstructorObjectCreation {
@@ -11,19 +10,11 @@ public class UnsafeNoConstructorObjectCreation {
 
         // Instantiate object with Unsafe without calling its constructor
         System.out.println("Creating an object with Unsafe without calling its constructor");
-        Unsafe unsafe = getUnsafe();
         ClassWithExpensiveConstructor instance = (ClassWithExpensiveConstructor)
-                unsafe.allocateInstance(ClassWithExpensiveConstructor.class);
+                UnsafeProvider.getUnsafe().allocateInstance(ClassWithExpensiveConstructor.class);
         System.out.println("Is object null: " + (instance == null));
         System.out.println("Instance value = " + instance.getValue());
         System.out.println();
-    }
-
-    private static Unsafe getUnsafe() throws NoSuchFieldException, IllegalAccessException {
-        Field f = Unsafe.class.getDeclaredField("theUnsafe");
-        f.setAccessible(true);
-        Unsafe unsafe = (Unsafe) f.get(null);
-        return unsafe;
     }
 
     private static class ClassWithExpensiveConstructor {
