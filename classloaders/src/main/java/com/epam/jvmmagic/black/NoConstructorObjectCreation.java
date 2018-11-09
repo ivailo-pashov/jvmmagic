@@ -11,15 +11,6 @@ public class NoConstructorObjectCreation {
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
 
-        // Instantiate object with Unsafe without calling its constructor
-        System.out.println("Creating an object with Unsafe without calling its constructor");
-        Unsafe unsafe = getUnsafe();
-        ClassWithExpensiveConstructor instance = (ClassWithExpensiveConstructor)
-                unsafe.allocateInstance(ClassWithExpensiveConstructor.class);
-        System.out.println("Is object null: " + (instance == null));
-        System.out.println("Instance value = " + instance.getValue());
-        System.out.println();
-
         // Instantiate object with ReflectionFactory without calling its constructor
         System.out.println("Creating an object with ReflectionFactory without calling its constructor");
         Constructor<ClassWithExpensiveConstructor> silentConstructor = (Constructor<ClassWithExpensiveConstructor>) ReflectionFactory.getReflectionFactory()
@@ -32,11 +23,12 @@ public class NoConstructorObjectCreation {
         Constructor<ClassWithExpensiveConstructor> silentConstructor2 = (Constructor<ClassWithExpensiveConstructor>) ReflectionFactory.getReflectionFactory()
                 .newConstructorForSerialization(ClassWithExpensiveConstructor.class, OtherClass.class.getDeclaredConstructor());
         silentConstructor2.setAccessible(true);
-        ClassWithExpensiveConstructor instance2 = silentConstructor2.newInstance();
-        System.out.println("Instance value = " + instance2.getValue());
-        System.out.println("Memory value1 = " + unsafe.getInt(instance2, 8L));
-        System.out.println("Memory value2 = " + unsafe.getInt(instance2, 12L));
-        System.out.println("Are classes the same: " + (ClassWithExpensiveConstructor.class == instance2.getClass()));
+        ClassWithExpensiveConstructor instance = silentConstructor2.newInstance();
+        Unsafe unsafe = getUnsafe();
+        System.out.println("Instance value = " + instance.getValue());
+        System.out.println("Memory value1 = " + unsafe.getInt(instance, 8L));
+        System.out.println("Memory value2 = " + unsafe.getInt(instance, 12L));
+        System.out.println("Are classes the same: " + (ClassWithExpensiveConstructor.class == instance.getClass()));
         System.out.println("ClassWithExpensiveConstructor super class: " + instance.getClass().getSuperclass());
     }
 
