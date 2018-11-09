@@ -13,7 +13,7 @@
         <module>classloaders.api</module>
         <module>classloaders.cache</module>
         <module>compilation</module>
-        <module>agents/module>
+        <module>agents</module>
     </modules>
     <packaging>pom</packaging>
 
