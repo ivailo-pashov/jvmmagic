@@ -26,8 +26,8 @@ public class NoConstructorObjectCreation {
         ClassWithExpensiveConstructor instance = silentConstructor2.newInstance();
         Unsafe unsafe = getUnsafe();
         System.out.println("Instance value = " + instance.getValue());
-        System.out.println("Memory value1 = " + unsafe.getInt(instance, 8L));
-        System.out.println("Memory value2 = " + unsafe.getInt(instance, 12L));
+        System.out.println("Memory value1 = " + unsafe.getInt(instance, 12L));
+        System.out.println("Memory value2 = " + unsafe.getInt(instance, 16L));
         System.out.println("Are classes the same: " + (ClassWithExpensiveConstructor.class == instance.getClass()));
         System.out.println("ClassWithExpensiveConstructor super class: " + instance.getClass().getSuperclass());
     }

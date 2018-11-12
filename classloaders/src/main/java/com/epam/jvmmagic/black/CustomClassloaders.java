@@ -1,4 +1,4 @@
-package com.epam.jvmmagic;
+package com.epam.jvmmagic.black;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -7,12 +7,13 @@ import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Main {
+public class CustomClassloaders {
 
     public static void main(String[] args) {
         Map<String, List<Object>> items = new HashMap<>();
         for (int requestId = 0; requestId < 2; requestId++) {
-            for (int appId = 0; appId < 2; appId++) {
+            //TODO: try to increase the applications count and investigate how it impacts the resources usage
+            for (int appId = 0; appId < 3; appId++) {
                 String req = "req" + requestId;
                 Object response = request(req, "app" + appId, "profile" + appId);
                 items.computeIfAbsent(req, key -> new ArrayList<>()).add(response);
@@ -26,6 +27,7 @@ public class Main {
         try {
             URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{
                     getModuleURL("classloaders.api"),
+                    //TODO: try to exclude this module and instead list in the pom file as shared dependency
                     getModuleURL("classloaders.cache")
             });
             Class<?> apiClass = classLoader.loadClass("com.epam.jvmmagic.MyApi");

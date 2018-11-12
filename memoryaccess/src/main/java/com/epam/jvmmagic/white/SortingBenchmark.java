@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 @Fork(1)
 public class SortingBenchmark {
 
-    @Param({"4", "16", "64", "128", "256", "512", "1024"})
+    @Param({"4", "16", "64", "256", "1024"})
     private int size;
 
     private int[] intArray;

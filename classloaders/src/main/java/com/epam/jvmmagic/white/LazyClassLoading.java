@@ -18,7 +18,7 @@ package com.epam.jvmmagic.white;
 public class LazyClassLoading {
 
     public static void main(String[] args) throws ClassNotFoundException {
-        System.out.println("Main started");
+        System.out.println("CustomClassloaders started");
 
         System.out.println("Creating a reference to class");
         ClassToLoad instance = null;

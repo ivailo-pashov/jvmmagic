@@ -14,7 +14,7 @@ public class TimeShiftAgent {
 
     private static final long BACK_IN_TIME = 822355200000L;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ByteBuddyAgent.install();
 
         new ByteBuddy()
@@ -24,8 +24,13 @@ public class TimeShiftAgent {
                 .make()
                 .load(System.class.getClassLoader(), ClassReloadingStrategy.fromInstalledAgent());
 
-        Date now = new Date();
+        printCurrentDateTime();
+        Thread.sleep(2_000);
+        printCurrentDateTime();
+    }
 
-        System.out.println(SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG).format(now));
+    private static void printCurrentDateTime() {
+        Date now = new Date();
+        System.out.println(SimpleDateFormat.getDateTimeInstance().format(now));
     }
 }
